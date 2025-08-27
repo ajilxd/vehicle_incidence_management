@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import cloudinary from "@/lib/cloudinary";
-// import { createAuditLog } from "@/lib/audit-log";
+import { CreateAuditLog } from "@/types";
+import { createAuditLog } from "@/lib/auditLog";
 import {
   IncidentFiltersSchema,
   IncidentFilters,
@@ -144,14 +145,13 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Create audit log
-    // await createAuditLog({
-    //   action: "CREATE_INCIDENT",
-    //   entityId: incident.id,
-    //   entityType: "INCIDENT",
-    //   userId: parsedData.reportedById,
-    //   details: `Created incident: ${incident.title}`,
-    // });
+    await createAuditLog({
+      action: "CREATE_INCIDENT",
+      entityId: incident.id,
+      entityType: "INCIDENT",
+      userId: parsedData.reportedById,
+      details: `Created incident: ${incident.title}`,
+    });
 
     return NextResponse.json(incident, { status: 201 });
   } catch (error) {

@@ -29,3 +29,11 @@ export enum IncidentSeverity {
   MEDIUM = "MEDIUM",
   HIGH = "HIGH",
 }
+
+export type CreateAuditLog = {
+  action: string;
+  entityId: number;
+  entityType: string;
+  userId: number;
+  details: string;
+};

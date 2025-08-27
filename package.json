@@ -6,7 +6,10 @@
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "prisma:md": "npx prisma migrate dev",
+    "prisma:r": "npx prisma migrate reset",
+    "prisma:d": "npx prisma migrate deploy"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.1",

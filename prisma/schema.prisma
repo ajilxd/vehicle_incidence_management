@@ -159,3 +159,25 @@ enum IncidentUpdateType {
 
   @@map("incident_update_types")
 }
+
+enum AuditEntityType {
+  USER
+  INCIDENT
+  CAR
+  CAR_READING
+  ASSIGNMENT
+  AUTH
+
+  @@map("audit_entity_type")
+}
+
+enum AuditActionType {
+  CREATE
+  UPDATE
+  DELETE
+  ASSIGN
+  STATUS_CHANGE
+
+
+  @@map("audit_action_type")
+}
