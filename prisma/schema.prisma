@@ -82,7 +82,7 @@ model Car {
   make         String
   model        String
   incidents    Incident[]
-
+  carReadings  CarReading[]
   @@map("cars")
 }
 
@@ -91,6 +91,8 @@ model CarReading {
   odometerReading Int
   reportedAt      DateTime   @default(now())
   incidents       Incident[]
+  carId           Int
+  car             Car        @relation(fields: [carId],references: [id],onDelete: Cascade)
   @@map("car_readings")
 }
 
