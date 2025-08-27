@@ -1,0 +1,147 @@
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["driverAdapters"] // Required for NeonDB adapter
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Incident {
+  id              Int              @id @default(autoincrement())
+  carId           Int
+  reportedById    Int
+  assignedToId    Int?
+  title           String
+  description     String
+  severity        IncidentSeverity @default(LOW)
+  status          IncidentStatus   @default(PENDING)
+  type            IncidentType
+  location        String?
+  latitude        Float?
+  longitude       Float?
+  occurredAt      DateTime
+  reportedAt      DateTime         @default(now())
+  carReadingId    Int?
+  images          String[]         // Array of image URLs
+  documents       String[]         // Array of document URLs
+  resolutionNotes String?
+  estimatedCost   Decimal?          @db.Decimal(10,2)
+  actualCost      Decimal?          @db.Decimal(10,2)
+  resolvedAt      DateTime?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  car             Car              @relation(fields: [carId], references: [id],onDelete: Cascade)
+  reportedBy      User             @relation("IncidentReporter", fields: [reportedById], references: [id],onDelete: Cascade)
+  assignedTo      User?            @relation("IncidentAssignee", fields: [assignedToId], references: [id],onDelete: SetNull)
+  carReading      CarReading?      @relation(fields: [carReadingId], references: [id],onDelete: SetNull)
+  updates         IncidentUpdate[]
+  @@index([carId])
+  @@index([reportedById])
+  @@index([assignedToId])
+  @@index([status])
+  @@index([severity])
+  @@index([occurredAt])
+  @@index([createdAt])
+  @@map("incidents")
+}
+
+model IncidentUpdate {
+  id          Int      @id @default(autoincrement())
+  incidentId  Int
+  userId      Int
+  message     String    @db.VarChar(1000)
+  updateType  IncidentUpdateType
+  createdAt   DateTime @default(now())
+  incident    Incident @relation(fields: [incidentId], references: [id],onDelete:Cascade)
+  user        User     @relation(fields: [userId], references: [id],onDelete: Cascade)
+  @@index([createdAt])
+  @@index([incidentId])
+  @@index([userId])
+  @@map("incident_updates")
+}
+
+model User {
+  id               Int               @id @default(autoincrement())
+  incidentsReported Incident[]       @relation("IncidentReporter")
+  incidentsAssigned Incident[]       @relation("IncidentAssignee")
+  incidentUpdates   IncidentUpdate[]
+  name              String
+  email             String             @unique
+  password          String
+  role              UserRole           @default(USER)
+  
+
+
+  @@index([name])
+  @@map("users")
+}
+
+model Car {
+  id        Int        @id @default(autoincrement())
+  incidents Incident[]
+  licensePlate String  @unique
+  model String
+  carReadings CarReading[]
+
+  @@map("cars")
+}
+
+model CarReading {
+  id        Int        @id @default(autoincrement())
+  incidents Incident[]
+  odometerReading Int     
+  reportedAt DateTime @default(now())
+  carId     Int
+  car       Car       @relation(fields: [carId],references: [id],onDelete: Cascade)
+  @@index([carId])
+  @@map("car_readings")
+}
+
+
+enum UserRole{
+  USER
+  MANAGER
+  @@map("user_roles")
+}
+
+enum IncidentSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+  @@map("incident_severities")
+}
+
+enum IncidentStatus {
+  PENDING
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+  CANCELLED
+  @@map("incident_statuses")
+}
+
+enum IncidentType {
+  ACCIDENT
+  BREAKDOWN
+  THEFT
+  VANDALISM
+  MAINTENANCE_ISSUE
+  TRAFFIC_VIOLATION
+  FUEL_ISSUE
+  OTHER
+  @@map("incident_types")
+}
+
+enum IncidentUpdateType {
+  STATUS_CHANGE
+  ASSIGNMENT
+  COMMENT
+  COST_UPDATE
+  RESOLUTION
+  @@map("incident_update_types")
+}
