@@ -23,3 +23,9 @@ export enum IncidentUpdateType {
   RESOLUTION = "RESOLUTION",
   COST_UPDATE = "COST_UPDATE",
 }
+
+export enum IncidentSeverity {
+  LOW = "LOW",
+  MEDIUM = "MEDIUM",
+  HIGH = "HIGH",
+}
