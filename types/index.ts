@@ -1,3 +1,5 @@
+import { AuditActionType, AuditEntityType } from "@prisma/client";
+
 export enum IncidentType {
   ACCIDENT = "ACCIDENT",
   THEFT = "THEFT",
@@ -31,9 +33,9 @@ export enum IncidentSeverity {
 }
 
 export type CreateAuditLog = {
-  action: string;
+  action: AuditActionType;
   entityId: number;
-  entityType: string;
+  entityType: AuditEntityType;
   userId: number;
   details: string;
 };
