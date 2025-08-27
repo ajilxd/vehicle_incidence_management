@@ -1,5 +1,10 @@
 import { z } from "zod";
-import { IncidentStatus, IncidentType, IncidentSeverity } from "@/types";
+import { IncidentType } from "@prisma/client";
+import {
+  IncidentStatus,
+  IncidentSeverity,
+  IncidentUpdateType,
+} from "@prisma/client";
 
 export const IncidentCreateSchema = z.object({
   carId: z.number().int().positive(),
@@ -9,7 +14,7 @@ export const IncidentCreateSchema = z.object({
   description: z.string().min(1, "Description is required"),
 
   severity: z.nativeEnum(IncidentSeverity).default(IncidentSeverity.LOW),
-  status: z.nativeEnum(IncidentStatus).default(IncidentStatus.OPEN),
+  status: z.nativeEnum(IncidentStatus).default(IncidentStatus.PENDING),
   type: z.nativeEnum(IncidentType),
 
   location: z.string().optional(),
@@ -31,3 +36,13 @@ export const IncidentUpdateSchema = z.object({
   actualCost: z.number().positive().optional(),
   resolvedAt: z.coerce.date().optional(),
 });
+
+export const IncidentFiltersSchema = z.object({
+  status: z.nativeEnum(IncidentStatus).optional(),
+  severity: z.nativeEnum(IncidentSeverity).optional(),
+  query: z.string().optional(),
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(10),
+});
+
+export type IncidentFilters = z.infer<typeof IncidentFiltersSchema>;
