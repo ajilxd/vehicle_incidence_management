@@ -7,9 +7,9 @@ import {
 } from "@prisma/client";
 
 export const IncidentCreateSchema = z.object({
-  carId: z.number().int().positive(),
-  reportedById: z.number().int().positive(),
-  assignedToId: z.number().int().positive().optional(),
+  carId: z.coerce.number().int().positive(),
+  reportedById: z.coerce.number().int().positive(),
+  assignedToId: z.coerce.number().int().positive().optional(),
   title: z.string().min(1, "Title is required"),
   description: z.string().min(1, "Description is required"),
 
@@ -18,8 +18,8 @@ export const IncidentCreateSchema = z.object({
   type: z.nativeEnum(IncidentType),
 
   location: z.string().optional(),
-  latitude: z.number().optional(),
-  longitude: z.number().optional(),
+  latitude: z.coerce.number().optional(),
+  longitude: z.coerce.number().optional(),
   occurredAt: z.coerce.date(),
   carReadingId: z.number().int().positive().optional(),
   images: z.array(z.string()).optional(),
