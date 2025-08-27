@@ -1,6 +1,11 @@
-import prisma from "@/lib/prisma";
-import { hash } from "bcryptjs";
-import { UserRole, IncidentSeverity, IncidentStatus, IncidentType, IncidentUpdateType } from "@prisma/client";
+const dotenv = require("dotenv");
+dotenv.config();
+
+const { PrismaClient } = require("@prisma/client");
+const { hash } = require("bcryptjs");
+
+// Initialize Prisma client
+const prisma = new PrismaClient();
 
 async function main() {
   const passwordHash = await hash("Password@123", 10);
@@ -12,25 +17,25 @@ async function main() {
         name: "Alice Johnson",
         email: "alice@example.com",
         password: passwordHash,
-        role: UserRole.USER,
+        role: "USER",
       },
       {
         name: "Bob Smith",
         email: "bob@example.com",
         password: passwordHash,
-        role: UserRole.USER,
+        role: "USER",
       },
       {
         name: "Charlie Davis",
         email: "charlie@example.com",
         password: passwordHash,
-        role: UserRole.USER,
+        role: "USER",
       },
       {
         name: "Diana Prince",
         email: "diana@example.com",
         password: passwordHash,
-        role: UserRole.MANAGER,
+        role: "MANAGER",
       },
     ],
     skipDuplicates: true,
@@ -86,18 +91,18 @@ async function main() {
         assignedToId: 4,
         title: "Minor Collision",
         description: "Rear-end collision at parking lot",
-        severity: IncidentSeverity.LOW,
-        status: IncidentStatus.PENDING,
-        type: IncidentType.ACCIDENT,
+        severity: "LOW",
+        status: "PENDING",
+        type: "ACCIDENT",
         location: "Main Street Parking",
         latitude: 40.7128,
-        longitude: -74.0060,
+        longitude: -74.006,
         occurredAt: new Date("2025-01-10T08:00:00Z"),
         reportedAt: new Date("2025-01-10T08:30:00Z"),
         carReadingId: 1,
         images: ["image1.jpg", "image2.jpg"],
         documents: ["report.pdf"],
-        estimatedCost: 500.00,
+        estimatedCost: 500.0,
       },
       {
         carId: 2,
@@ -105,9 +110,9 @@ async function main() {
         assignedToId: null,
         title: "Flat Tire",
         description: "Front left tire punctured on highway",
-        severity: IncidentSeverity.MEDIUM,
-        status: IncidentStatus.IN_PROGRESS,
-        type: IncidentType.BREAKDOWN,
+        severity: "MEDIUM",
+        status: "IN_PROGRESS",
+        type: "BREAKDOWN",
         location: "Highway 101",
         latitude: 34.0522,
         longitude: -118.2437,
@@ -116,7 +121,7 @@ async function main() {
         carReadingId: 2,
         images: ["tire.jpg"],
         documents: [],
-        estimatedCost: 150.00,
+        estimatedCost: 150.0,
       },
       {
         carId: 3,
@@ -124,9 +129,9 @@ async function main() {
         assignedToId: 4,
         title: "Vandalism Incident",
         description: "Car scratched on driver side door",
-        severity: IncidentSeverity.HIGH,
-        status: IncidentStatus.PENDING,
-        type: IncidentType.VANDALISM,
+        severity: "HIGH",
+        status: "PENDING",
+        type: "VANDALISM",
         location: "Downtown Garage",
         latitude: 51.5074,
         longitude: -0.1278,
@@ -135,7 +140,7 @@ async function main() {
         carReadingId: 3,
         images: ["scratch1.jpg", "scratch2.jpg"],
         documents: ["police_report.pdf"],
-        estimatedCost: 800.00,
+        estimatedCost: 800.0,
       },
     ],
     skipDuplicates: true,
@@ -148,28 +153,28 @@ async function main() {
         incidentId: 1,
         userId: 4,
         message: "Assigned to manager for review",
-        updateType: IncidentUpdateType.ASSIGNMENT,
+        updateType: "ASSIGNMENT",
         createdAt: new Date("2025-01-10T09:00:00Z"),
       },
       {
         incidentId: 1,
         userId: 1,
         message: "Waiting for insurance assessment",
-        updateType: IncidentUpdateType.COMMENT,
+        updateType: "COMMENT",
         createdAt: new Date("2025-01-11T10:00:00Z"),
       },
       {
         incidentId: 2,
         userId: 2,
         message: "Tire replacement in progress",
-        updateType: IncidentUpdateType.STATUS_CHANGE,
+        updateType: "STATUS_CHANGE",
         createdAt: new Date("2025-02-15T13:00:00Z"),
       },
       {
         incidentId: 3,
         userId: 4,
         message: "Police report received, assessing damage",
-        updateType: IncidentUpdateType.COMMENT,
+        updateType: "COMMENT",
         createdAt: new Date("2025-03-06T09:00:00Z"),
       },
     ],
@@ -179,7 +184,7 @@ async function main() {
 
 main()
   .catch((e) => {
-    console.error(e);
+    console.error("Seeding failed:", e);
     process.exit(1);
   })
   .finally(async () => {
