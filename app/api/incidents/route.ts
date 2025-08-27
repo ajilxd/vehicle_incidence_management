@@ -1,14 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import cloudinary from "@/lib/cloudinary";
-import { CreateAuditLog } from "@/types";
 import { createAuditLog } from "@/lib/auditLog";
 import {
   IncidentFiltersSchema,
   IncidentFilters,
   IncidentCreateSchema,
 } from "@/schemas";
-import { Prisma } from "@prisma/client";
+import { AuditActionType, AuditEntityType, Prisma } from "@prisma/client";
 import { IncidentsResponse } from "@/schemas/response/incident";
 
 export async function GET(request: NextRequest) {
@@ -146,9 +145,9 @@ export async function POST(request: NextRequest) {
     });
 
     await createAuditLog({
-      action: "CREATE_INCIDENT",
+      action: AuditActionType.CREATE,
       entityId: incident.id,
-      entityType: "INCIDENT",
+      entityType: AuditEntityType.INCIDENT,
       userId: parsedData.reportedById,
       details: `Created incident: ${incident.title}`,
     });
