@@ -69,14 +69,17 @@ async function main() {
       {
         odometerReading: 50000,
         reportedAt: new Date("2025-01-15T10:00:00Z"),
+        carId: 1,
       },
       {
         odometerReading: 75000,
         reportedAt: new Date("2025-02-20T14:30:00Z"),
+        carId: 1,
       },
       {
         odometerReading: 30000,
         reportedAt: new Date("2025-03-10T09:15:00Z"),
+        carId: 2,
       },
     ],
     skipDuplicates: true,
