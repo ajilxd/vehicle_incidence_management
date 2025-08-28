@@ -1,11 +1,10 @@
 import { UserRole } from "@prisma/client";
-import { z } from "zod";
 
-const user = z.object({
-  id: z.number(),
-  name: z.string(),
-  email: z.string(),
-  role: z.nativeEnum(UserRole),
-});
+type user = {
+  id: number;
+  name: string;
+  email: string;
+  role: UserRole;
+};
 
-export type UserResponse = z.infer<typeof user>[];
+export type UserResponse = user[];
