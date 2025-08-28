@@ -5,4 +5,4 @@ type car = {
   licensePlate: string;
 };
 
-export type carResponse = car[];
+export type CarResponse = car[];

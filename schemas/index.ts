@@ -1,10 +1,6 @@
 import { z } from "zod";
 import { IncidentType } from "@prisma/client";
-import {
-  IncidentStatus,
-  IncidentSeverity,
-  IncidentUpdateType,
-} from "@prisma/client";
+import { IncidentStatus, IncidentSeverity } from "@prisma/client";
 
 export const IncidentCreateSchema = z.object({
   carId: z.coerce.number().int().positive(),
@@ -37,6 +33,10 @@ export const IncidentFiltersSchema = z.object({
   query: z.string().optional(),
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(10),
+  carId: z.coerce.number().int().positive().optional(),
+  assignedToId: z.coerce.number().int().positive().optional(),
+  startDate: z.coerce.date().optional(),
+  endDate: z.coerce.date().optional(),
 });
 
 export type IncidentFilters = z.infer<typeof IncidentFiltersSchema>;

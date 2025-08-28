@@ -32,6 +32,8 @@ export type Incident = {
   type: IncidentType;
   location: string | null;
   occurredAt: Date;
+  reportedAt: Date;
+  estimatedCost: number | null;
   car: Car;
   reportedBy: User;
   assignedTo: User | null;

@@ -35,6 +35,17 @@ const getIncidents = async function (request: NextRequest) {
     ];
   }
 
+  if (filters.startDate && filters.endDate) {
+    where.occurredAt = {
+      gte: filters.startDate,
+      lte: filters.endDate,
+    };
+  }
+
+  if (filters.assignedToId) {
+    where.assignedToId = filters.assignedToId;
+  }
+
   const incidents = await prisma.incident.findMany({
     where,
     take: filters.limit,
@@ -49,7 +60,7 @@ const getIncidents = async function (request: NextRequest) {
       type: true,
       location: true,
       occurredAt: true,
-
+      reportedAt: true,
       car: {
         select: { id: true, make: true, model: true, licensePlate: true },
       },

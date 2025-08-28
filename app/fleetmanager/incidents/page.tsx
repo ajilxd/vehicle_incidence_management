@@ -1,24 +1,184 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
+import { useState, useCallback, useMemo } from "react";
+import IncidentsTable from "@/components/incident/Table";
+import Pagination from "@/components/pagination";
+import { useIncidents, useUsers } from "@/lib/queries/hooks";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import { IncidentSeverity, IncidentStatus, IncidentType } from "@prisma/client";
+import { debounce } from "@/lib/debounce";
 
-const fetchIncidents = async () => {
-  const { data } = await axios.get("/api/incidents");
-  return data;
-};
+export default function Page() {
+  // filters
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
+  const [status, setStatus] = useState<IncidentStatus | string>("");
+  const [severity, setSeverity] = useState<IncidentSeverity | string>("");
+  const [type, setType] = useState<IncidentType | string>("");
+  const [assigned, setAssigned] = useState("");
+  const [dateFrom, setDateFrom] = useState<string>("");
+  const [dateTo, setDateTo] = useState<string>("");
+  // pagination
+  const handlePageChange = useCallback((p: number) => setPage(p), []);
 
-export default function IncidentList() {
-  const { data, isLoading, error } = useQuery(["incidents"], fetchIncidents);
+  // debounced search
+  const debouncedSetSearch = useCallback(
+    debounce((value: string) => {
+      setSearch(value);
+    }, 1000),
+    []
+  );
 
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>Error fetching incidents</div>;
+  const { data: response } = useIncidents({
+    page: page,
+    limit: 10,
+    query: search === "all" ? "" : search,
+    status: status === "all" ? "" : status,
+    severity: severity === "all" ? "" : severity,
+    assignedToId: assigned === "all" ? "" : assigned,
+    startDate: dateFrom,
+    endDate: dateTo,
+  });
+
+  const { data: users } = useUsers();
+
+  const incidents = response?.data ?? [];
+  const meta = response?.meta;
+  const assignees = users ?? [];
 
   return (
-    <ul>
-      {data.map((incident: any) => (
-        <li key={incident.id}>{incident.title}</li>
-      ))}
-    </ul>
+    <div className="p-4 sm:p-6 space-y-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        {/* Status */}
+        <div className="flex flex-col">
+          <Label>Status</Label>
+          <Select onValueChange={(val) => setStatus(val || "")}>
+            <SelectTrigger>
+              <SelectValue placeholder="All" defaultValue={status} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={"all"}>All</SelectItem>
+              <SelectItem value={IncidentStatus.PENDING}>Pending</SelectItem>
+              <SelectItem value={IncidentStatus.RESOLVED}>Resolved</SelectItem>
+              <SelectItem value={IncidentStatus.CLOSED}>Closed</SelectItem>
+              <SelectItem value={IncidentStatus.CANCELLED}>
+                Cancelled
+              </SelectItem>
+              <SelectItem value={IncidentStatus.IN_PROGRESS}>
+                In Progress
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Severity */}
+        <div className="flex flex-col">
+          <Label>Severity</Label>
+          <Select onValueChange={(val) => setSeverity(val || "")}>
+            <SelectTrigger>
+              <SelectValue placeholder="All" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={"all"}>All</SelectItem>
+              <SelectItem value={IncidentSeverity.LOW}>Low</SelectItem>
+              <SelectItem value={IncidentSeverity.MEDIUM}>Medium</SelectItem>
+              <SelectItem value={IncidentSeverity.HIGH}>High</SelectItem>
+              <SelectItem value={IncidentSeverity.CRITICAL}>
+                Critical
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Type */}
+        <div className="flex flex-col">
+          <Label>Type</Label>
+          <Select onValueChange={(val) => setType(val || "")}>
+            <SelectTrigger>
+              <SelectValue placeholder="All" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={"all"}>All</SelectItem>
+              <SelectItem value={IncidentType.VANDALISM}>Vandalism</SelectItem>
+              <SelectItem value={IncidentType.ACCIDENT}>Accident</SelectItem>
+              <SelectItem value={IncidentType.THEFT}>Theft</SelectItem>
+              <SelectItem value={IncidentType.OTHER}>Other</SelectItem>
+              <SelectItem value={IncidentType.FUEL_ISSUE}>
+                Fuel Issue
+              </SelectItem>
+              <SelectItem value={IncidentType.TRAFFIC_VIOLATION}>
+                Traffic Violation
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Assigned To */}
+        <div className="flex flex-col">
+          <Label>Assigned To</Label>
+          <Select onValueChange={(val) => setAssigned(val || "")}>
+            <SelectTrigger>
+              <SelectValue placeholder="All" />
+            </SelectTrigger>
+            <SelectContent>
+              {assignees.map((i) => (
+                <SelectItem key={i.id} value={i.id}>
+                  {i.name}
+                </SelectItem>
+              ))}
+              <SelectItem value={"all"}>All</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Date From */}
+        <div className="flex flex-col">
+          <Label>Date From</Label>
+          <Input
+            type="date"
+            value={dateFrom}
+            onChange={(e) => setDateFrom(e.target.value)}
+          />
+        </div>
+
+        {/* Date To */}
+        <div className="flex flex-col">
+          <Label>Date To</Label>
+          <Input
+            type="date"
+            value={dateTo}
+            onChange={(e) => setDateTo(e.target.value)}
+          />
+        </div>
+
+        {/* Search - span full width */}
+        <div className="flex flex-col sm:col-span-2 md:col-span-3 lg:col-span-6">
+          <Label>Search</Label>
+          <Input
+            placeholder="Search by title..."
+            value={search}
+            onChange={(e) => debouncedSetSearch(e.target.value)}
+          />
+        </div>
+      </div>
+
+      {/* Incidents Table */}
+      <IncidentsTable incidents={incidents} />
+
+      {/* Pagination */}
+      <Pagination
+        currentPage={page}
+        totalPages={meta?.totalPages || 1}
+        onPageChange={handlePageChange}
+      />
+    </div>
   );
 }
