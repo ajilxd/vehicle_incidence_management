@@ -40,3 +40,8 @@ export const IncidentFiltersSchema = z.object({
 });
 
 export type IncidentFilters = z.infer<typeof IncidentFiltersSchema>;
+
+export const IncidentCommentSchema = z.object({
+  comment: z.string().min(1, "Comment is required"),
+  userId: z.coerce.number().int().positive(),
+});
