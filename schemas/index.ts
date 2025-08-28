@@ -17,6 +17,8 @@ export const IncidentCreateSchema = z.object({
   latitude: z.coerce.number().optional(),
   longitude: z.coerce.number().optional(),
   occurredAt: z.coerce.date(),
+  reportedAt: z.coerce.date().default(new Date()),
+  estimatedCost: z.coerce.number().positive().optional(),
   carReadingId: z.number().int().positive().optional(),
   images: z.array(z.string()).optional(),
 });
