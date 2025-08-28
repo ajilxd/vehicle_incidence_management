@@ -26,15 +26,9 @@ export const IncidentCreateSchema = z.object({
 });
 
 export const IncidentUpdateSchema = z.object({
-  title: z.string().min(1, "Title is required").optional(),
-  description: z.string().min(1, "Description is required").optional(),
-  severity: z.nativeEnum(IncidentSeverity).optional(),
   status: z.nativeEnum(IncidentStatus).optional(),
   assignedToId: z.number().int().positive().optional(),
   resolutionNotes: z.string().optional(),
-  estimatedCost: z.number().positive().optional(),
-  actualCost: z.number().positive().optional(),
-  resolvedAt: z.coerce.date().optional(),
 });
 
 export const IncidentFiltersSchema = z.object({

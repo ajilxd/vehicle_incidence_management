@@ -1,4 +1,10 @@
-import { IncidentSeverity, IncidentStatus, IncidentType } from "@prisma/client";
+import {
+  IncidentSeverity,
+  IncidentStatus,
+  IncidentType,
+  IncidentUpdateType,
+} from "@prisma/client";
+import { Decimal } from "@prisma/client/runtime/library";
 
 export type Car = {
   id: number;
@@ -44,3 +50,28 @@ export type IncidentsResponse = {
   data: Incident[];
   meta: Meta;
 };
+
+export type IncidentDetailsResponse =
+  | (Incident & {
+      occurredAt: Date;
+      reportedAt: Date;
+      resolvedAt: Date | null;
+      images: string[];
+      documents: string[];
+      latitude: number | null;
+      longitude: number | null;
+      actualCost: Decimal | null;
+      estimatedCost: Decimal | null;
+      resolutionNotes: string | null;
+      updates: {
+        id: number;
+        message: string;
+        updateType: IncidentUpdateType;
+        createdAt: Date;
+        user: {
+          id: number;
+          name: string;
+        };
+      }[];
+    })
+  | null;

@@ -99,9 +99,9 @@ model CarReading {
 
 model AuditLog {
   id          Int      @id @default(autoincrement())
-  action      String
+  action      AuditActionType
   entityId    Int
-  entityType  String
+  entityType  AuditEntityType
   userId      Int
   details     String?
   createdAt   DateTime @default(now())
