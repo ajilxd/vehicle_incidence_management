@@ -4,7 +4,6 @@ import {
   IncidentType,
   IncidentUpdateType,
 } from "@prisma/client";
-import { Decimal } from "@prisma/client/runtime/library";
 
 export type Car = {
   id: number;
@@ -60,8 +59,8 @@ export type IncidentDetailsResponse =
       documents: string[];
       latitude: number | null;
       longitude: number | null;
-      actualCost: Decimal | null;
-      estimatedCost: Decimal | null;
+      actualCost: number | null;
+      estimatedCost: number | null;
       resolutionNotes: string | null;
       updates: {
         id: number;

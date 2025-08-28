@@ -28,8 +28,8 @@ model Incident {
   images          String[]
   documents       String[]
   resolutionNotes String?
-  estimatedCost   Decimal?         @db.Decimal(10, 2)
-  actualCost      Decimal?         @db.Decimal(10, 2)
+  estimatedCost   Float?         
+  actualCost      Float?         
   resolvedAt      DateTime?
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
