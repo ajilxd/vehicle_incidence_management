@@ -1,3 +1,4 @@
+import { handleApi } from "@/lib/handleApi";
 import prisma from "@/lib/prisma";
 import { IncidentUpdateSchema } from "@/schemas";
 import { IncidentDetailsResponse } from "@/schemas/response/incident";
@@ -8,10 +9,10 @@ import {
 } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(
+const getIncidentDetails = async (
   request: NextRequest,
   { params }: { params: { id: string } }
-) {
+) => {
   const id = Number(params.id);
   if (!id || isNaN(id)) {
     return NextResponse.json(
@@ -70,12 +71,12 @@ export async function GET(
     },
   });
   return NextResponse.json(payload);
-}
+};
 
-export async function PUT(
+const updateIncident = async (
   request: NextRequest,
   { params }: { params: { id: string } }
-) {
+) => {
   const id = Number(params.id);
   const body = await request.json();
   if (!id || isNaN(id)) {
@@ -145,4 +146,7 @@ export async function PUT(
     },
   });
   return NextResponse.json(message);
-}
+};
+
+export const GET = handleApi(getIncidentDetails);
+export const PUT = handleApi(updateIncident);

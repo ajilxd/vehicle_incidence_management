@@ -2,8 +2,9 @@ import prisma from "@/lib/prisma";
 import { IncidentStatus } from "@prisma/client";
 import { serializePrisma } from "@/lib/serializePrisma";
 import { NextResponse } from "next/server";
+import { handleApi } from "@/lib/handleApi";
 
-export async function GET() {
+const getStats = async () => {
   const totalIncidents = await prisma.incident.count();
   const openIncidents = await prisma.incident.count({
     where: {
@@ -54,16 +55,6 @@ export async function GET() {
     },
   });
 
-  //   time based
-  //   const incidentsByMonth = await prisma.$queryRaw`
-  //   SELECT
-  //     EXTRACT(MONTH FROM "occurredAt") AS month,
-  //     COUNT(id) AS incident_count
-  //   FROM incidents
-  //   GROUP BY EXTRACT(MONTH FROM "occurredAt")
-  //   ORDER BY month;
-  // `;
-
   // Fetch all incidents and group by month in JS
   const incidents = await prisma.incident.findMany({
     select: {
@@ -94,9 +85,10 @@ export async function GET() {
     totalEstimatedCost,
     totalActualCost,
     costBySeverity,
-    // incidentsByMonth,
     incidentsByMonth: incidentsByMonthArray,
   };
 
   return NextResponse.json(payload);
-}
+};
+
+export const GET = handleApi(getStats);

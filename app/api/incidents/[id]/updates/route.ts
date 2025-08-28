@@ -1,19 +1,13 @@
-/*
- **POST /api/incidents/[id]/updates**
-   - Add comment or update to incident
-   - Send notifications to relevant parties
-
-*/
-
+import { handleApi } from "@/lib/handleApi";
 import prisma from "@/lib/prisma";
 import { IncidentCommentSchema } from "@/schemas";
 import { IncidentUpdateType } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(
+const createComment = async (
   request: NextRequest,
   { params }: { params: { id: string } }
-) {
+) => {
   const id = Number(params.id);
   const body = await request.json();
   if (!id || isNaN(id)) {
@@ -31,7 +25,7 @@ export async function POST(
     );
   }
   const result = parsedData.data;
-  //   IncidentUpdate
+
   await prisma.incidentUpdate.create({
     data: {
       incidentId: id,
@@ -43,4 +37,6 @@ export async function POST(
   });
 
   return NextResponse.json({ message: "Incident updated successfully" });
-}
+};
+
+export const POST = handleApi(createComment);
