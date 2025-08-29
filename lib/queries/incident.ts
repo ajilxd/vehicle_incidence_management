@@ -1,6 +1,9 @@
 import { IncidentFilters } from "@/types";
 import { apiClient } from "../api-client";
-import { IncidentsResponse } from "@/schemas/response/incident";
+import {
+  IncidentsResponse,
+  IncidentDetailsResponse,
+} from "@/schemas/response/incident";
 
 export const fetchIncidents: (
   filters: IncidentFilters
@@ -16,6 +19,8 @@ export const fetchIncidents: (
   return apiClient.get(endpoint);
 };
 
-export const fetchIncidentDetail = async (id: string) => {
+export const fetchIncidentDetail: (
+  id: string
+) => Promise<IncidentDetailsResponse> = async (id: string) => {
   return apiClient.get(`/incidents/${id}`);
 };
