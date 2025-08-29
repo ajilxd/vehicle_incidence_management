@@ -1,7 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "../query-keys";
 import { apiClient } from "@/lib/api-client";
-import { toast } from "sonner";
 export const useCreateIncident = () => {
   const queryClient = useQueryClient();
 
@@ -18,6 +17,39 @@ export const useCreateIncident = () => {
     },
     onError: (error) => {
       console.error("Error creating incident:", error);
+    },
+  });
+};
+
+export const useUpdateIncident = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: object }) => {
+      return apiClient.patch(`/incidents/${id}`, data);
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.incidents.lists() });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.incidents.detail(variables.id),
+      });
+      queryClient.invalidateQueries({ queryKey: queryKeys.incidents.stats() });
+    },
+  });
+};
+export const useAddIncidentComment = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, comment }: { id: string; comment: string }) =>
+      apiClient.post(`/incidents/${id}/updates`, {
+        message: comment,
+        updateType: "COMMENT",
+      }),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.incidents.detail(variables.id),
+      });
     },
   });
 };

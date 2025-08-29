@@ -8,13 +8,15 @@ import {
   IncidentUpdateType,
 } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
+import { is } from "zod/v4/locales";
 
 const getIncidentDetails = async (
   request: NextRequest,
   context: { params: { id: string } }
 ) => {
-  const id = Number(context.params?.id);
-  if (!id || isNaN(id)) {
+  const id = context.params?.id;
+  const incidentId = Number(id);
+  if (!incidentId || isNaN(incidentId)) {
     return NextResponse.json(
       { error: "Invalid or missing id" },
       { status: 400 }
@@ -22,7 +24,7 @@ const getIncidentDetails = async (
   }
 
   const payload: IncidentDetailsResponse = await prisma.incident.findUnique({
-    where: { id },
+    where: { id: incidentId },
     include: {
       updates: {
         select: {
@@ -75,18 +77,22 @@ const getIncidentDetails = async (
 
 const updateIncident = async (
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) => {
-  const id = Number(params.id);
+  const { id } = await params;
+  console.log("Raw id:", id, "Type:", typeof id);
+  console.log("id from params", Number(id), 3);
+  console.log(isNaN(+id));
+  const incidentId = Number(id);
   const body = await request.json();
-  if (!id || isNaN(id)) {
+  if (!incidentId || isNaN(incidentId)) {
     return NextResponse.json(
       { error: "Invalid or missing id" },
       { status: 400 }
     );
   }
 
-  if (!body.userId) {
+  if (!body.userId || isNaN(body.userId)) {
     return NextResponse.json(
       { error: "Invalid or missing user id" },
       { status: 400 }
@@ -108,21 +114,21 @@ const updateIncident = async (
   let entityType: AuditEntityType = AuditEntityType.INCIDENT;
   if ("status" in result) {
     payload = await prisma.incident.update({
-      where: { id },
+      where: { id: incidentId },
       data: { status: result.status },
     });
     updateType = IncidentUpdateType.STATUS_CHANGE;
     message = `Updated status to ${result.status}`;
   } else if ("assignedToId" in result) {
     payload = await prisma.incident.update({
-      where: { id },
+      where: { id: incidentId },
       data: { assignedToId: result.assignedToId },
     });
     updateType = IncidentUpdateType.ASSIGNMENT;
     message = `Assigned incident to ${result.assignedToId}`;
   } else if ("resolutionNotes" in result) {
     payload = await prisma.incident.update({
-      where: { id },
+      where: { id: incidentId },
       data: { resolutionNotes: result.resolutionNotes },
     });
     updateType = IncidentUpdateType.RESOLUTION;
@@ -132,7 +138,7 @@ const updateIncident = async (
   }
   // Create incident update
   await prisma.incidentUpdate.create({
-    data: { incidentId: id, message, updateType, userId: body.userId },
+    data: { incidentId, message, updateType, userId: body.userId },
   });
 
   // Create audit log
@@ -141,7 +147,7 @@ const updateIncident = async (
       action,
       entityType,
       userId: body.userId,
-      entityId: id,
+      entityId: incidentId,
       details: message,
     },
   });
@@ -149,4 +155,4 @@ const updateIncident = async (
 };
 
 export const GET = handleApi(getIncidentDetails);
-export const PUT = handleApi(updateIncident);
+export const PATCH = handleApi(updateIncident);

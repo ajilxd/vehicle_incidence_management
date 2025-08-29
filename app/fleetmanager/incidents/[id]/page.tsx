@@ -54,14 +54,14 @@ export default function IncidentPage({ params }: { params: { id: string } }) {
             <div>
               <h4 className="font-medium">Resolved</h4>
               <p className="text-sm text-muted-foreground">
-                {incident?.resolved ? "Yes" : "No"}
+                {incident?.resolvedAt ? "Yes" : "No"}
               </p>
             </div>
 
             <div>
               <h4 className="font-medium">Resolved At</h4>
               <p className="text-sm text-muted-foreground">
-                {incident?.resolvedAt || "N/A"}
+                {"" + incident?.resolvedAt || "N/A"}
               </p>
             </div>
 

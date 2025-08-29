@@ -1,6 +1,20 @@
 "use client";
 
+import { useState } from "react";
 import { Incident } from "@/schemas/response/incident";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
+import { Pencil, X } from "lucide-react";
+import { useMutation } from "@tanstack/react-query";
+import { apiClient } from "@/lib/api-client";
+import { useUpdateIncident } from "@/lib/queries/mutations/incident";
+import { useUsers } from "@/lib/queries/hooks";
+import { IncidentStatus } from "@prisma/client";
 
 export default function IncidentsTable({
   incidents,
@@ -9,6 +23,14 @@ export default function IncidentsTable({
   incidents: Incident[] | undefined;
   page: number;
 }) {
+  const [editingStatusId, setEditingStatusId] = useState<number | null>(null);
+  const [editingAssignedId, setEditingAssignedId] = useState<number | null>(
+    null
+  );
+
+  const updateIncident = useUpdateIncident();
+  const { data: users } = useUsers();
+
   const renderBadge = (value: string, type: "severity" | "status") => {
     const styles: Record<string, string> = {
       severity:
@@ -35,6 +57,7 @@ export default function IncidentsTable({
         <div className="flex flex-col gap-4">
           {incidents.map((incident, index) => {
             const {
+              id,
               title,
               severity,
               status,
@@ -44,13 +67,12 @@ export default function IncidentsTable({
               reportedBy,
               assignedTo,
               type,
-              location,
               description,
             } = incident;
 
             return (
               <div
-                key={incident.id}
+                key={id}
                 className="bg-white border rounded-lg shadow-sm p-4 sm:p-6 hover:shadow-md transition flex flex-col md:flex-row md:justify-between md:items-start gap-3"
               >
                 {/* Left Column: Main Info */}
@@ -97,22 +119,113 @@ export default function IncidentsTable({
                     {reportedBy?.name ?? "N/A"}
                   </div>
                   <div>
-                    <span className="font-semibold">Assigned To:</span>{" "}
-                    {assignedTo?.name ?? "N/A"}
-                  </div>
-                  <div>
                     <span className="font-semibold">Occurred At:</span>{" "}
-                    {new Date(occurredAt).toLocaleString()}
+                    {new Date(occurredAt).toDateString()}
                   </div>
-                  <div>
-                    <span className="font-semibold">Reported At:</span>{" "}
-                    {carReading?.reportedAt
-                      ? new Date(carReading.reportedAt).toLocaleString()
-                      : "N/A"}
+
+                  {/* Assigned To - inline edit */}
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold">Assigned To:</span>
+                    {editingAssignedId === id ? (
+                      <>
+                        <Select
+                          onValueChange={(val) => {
+                            updateIncident.mutateAsync({
+                              id,
+                              data: {
+                                assignedToId: Number(val),
+                                userId: 1,
+                              },
+                            });
+                            setEditingAssignedId(null);
+                          }}
+                          defaultValue={assignedTo?.id?.toString()}
+                        >
+                          <SelectTrigger className="w-[150px] h-8">
+                            <SelectValue placeholder="Select user" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {users?.map((user) => (
+                              <SelectItem
+                                key={user.id}
+                                value={user.id.toString()}
+                              >
+                                {user.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <X
+                          size={14}
+                          className="cursor-pointer text-gray-400 hover:text-gray-600"
+                          onClick={() => setEditingAssignedId(null)}
+                        />
+                      </>
+                    ) : (
+                      <>
+                        {assignedTo?.name ?? "N/A"}
+                        <Pencil
+                          size={14}
+                          className="cursor-pointer text-gray-400 hover:text-gray-600"
+                          onClick={() => setEditingAssignedId(id)}
+                        />
+                      </>
+                    )}
                   </div>
-                  <div>
-                    <span className="font-semibold">Location:</span>{" "}
-                    {location ?? "N/A"}
+
+                  {/* Status - inline edit */}
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold">Status:</span>
+                    {editingStatusId === id ? (
+                      <>
+                        <Select
+                          onValueChange={(val) => {
+                            updateIncident.mutate({
+                              id,
+                              data: { status: val, userId: 1 },
+                            });
+                            setEditingStatusId(null);
+                          }}
+                          defaultValue={status}
+                        >
+                          <SelectTrigger className="w-[120px] h-8">
+                            <SelectValue placeholder="Select status" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value={"all"}>All</SelectItem>
+                            <SelectItem value={IncidentStatus.PENDING}>
+                              Pending
+                            </SelectItem>
+                            <SelectItem value={IncidentStatus.RESOLVED}>
+                              Resolved
+                            </SelectItem>
+                            <SelectItem value={IncidentStatus.CLOSED}>
+                              Closed
+                            </SelectItem>
+                            <SelectItem value={IncidentStatus.CANCELLED}>
+                              Cancelled
+                            </SelectItem>
+                            <SelectItem value={IncidentStatus.IN_PROGRESS}>
+                              In Progress
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <X
+                          size={14}
+                          className="cursor-pointer text-gray-400"
+                          onClick={() => setEditingStatusId(null)}
+                        />
+                      </>
+                    ) : (
+                      <>
+                        {renderBadge(status, "status")}
+                        <Pencil
+                          size={14}
+                          className="cursor-pointer text-gray-400 hover:text-gray-600"
+                          onClick={() => setEditingStatusId(id)}
+                        />
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
