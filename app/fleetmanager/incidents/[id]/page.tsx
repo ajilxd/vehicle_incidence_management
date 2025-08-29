@@ -1,6 +1,7 @@
 "use client";
 
 import GoBackButton from "@/components/goback-button";
+import { CommentBox } from "@/components/incident/CommentBox";
 import {
   Card,
   CardContent,
@@ -10,18 +11,33 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useIncidentDetail } from "@/lib/queries/hooks";
+import { useAddIncidentComment } from "@/lib/queries/mutations/incident";
 import Image from "next/image";
 import { useParams } from "next/navigation";
+import { toast } from "sonner";
 
 export default function IncidentPage() {
   const params = useParams();
   const incidentId = params.id as string;
+  const incidentComment = useAddIncidentComment();
   const { data: incident } = useIncidentDetail(incidentId);
   console.log("incident", incident);
+  async function handleComment(comment: string) {
+    if (!comment.trim()) return;
+    await toast.promise(
+      incidentComment.mutateAsync({ id: incidentId, comment, userId: 1 }),
+      {
+        loading: "Adding comment...",
+        success: "Comment added successfully",
+        error: "Failed to add comment",
+      }
+    );
+  }
   return (
     <div className="container mx-auto p-4 space-y-6">
       {/* Title */}
       <GoBackButton />
+
       <div className="text-center">
         <h1 className="text-2xl md:text-3xl font-bold">Incident Details</h1>
         <p className="text-sm text-muted-foreground">
@@ -215,6 +231,7 @@ export default function IncidentPage() {
           )}
         </CardContent>
       </Card>
+      <CommentBox onAddComment={handleComment} />
     </div>
   );
 }

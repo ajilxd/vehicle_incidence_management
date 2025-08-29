@@ -41,10 +41,19 @@ export const useAddIncidentComment = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, comment }: { id: string; comment: string }) =>
+    mutationFn: async ({
+      id,
+      comment,
+      userId,
+    }: {
+      id: string;
+      comment: string;
+      userId: number;
+    }) =>
       apiClient.post(`/incidents/${id}/updates`, {
-        message: comment,
+        comment,
         updateType: "COMMENT",
+        userId,
       }),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({

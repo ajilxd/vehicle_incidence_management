@@ -6,11 +6,12 @@ import { NextRequest, NextResponse } from "next/server";
 
 const createComment = async (
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) => {
-  const id = Number(params.id);
+  const { id } = await params;
+  const incidentId = Number(id);
   const body = await request.json();
-  if (!id || isNaN(id)) {
+  if (!incidentId || isNaN(incidentId)) {
     return NextResponse.json(
       { error: "Invalid or missing id" },
       { status: 400 }
@@ -28,7 +29,7 @@ const createComment = async (
 
   await prisma.incidentUpdate.create({
     data: {
-      incidentId: id,
+      incidentId,
       message: result.comment,
       updateType: IncidentUpdateType.COMMENT,
       userId: result.userId,
