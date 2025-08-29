@@ -1,5 +1,5 @@
 "use client";
-import { IncidentFilters } from "@/types";
+import { CarFilters, IncidentFilters } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import { fetchIncidentDetail, fetchIncidents } from "../queries/incident";
 import { queryKeys } from "./query-keys";
@@ -32,10 +32,10 @@ export const useUsers = () => {
   });
 };
 
-export const useCars = () => {
+export const useCars = (filters: CarFilters = {}) => {
   return useQuery({
-    queryKey: queryKeys.cars.list(),
-    queryFn: () => fetchCars(),
+    queryKey: queryKeys.cars.list(filters),
+    queryFn: () => fetchCars(filters),
     staleTime: 2 * 60 * 1000,
   });
 };

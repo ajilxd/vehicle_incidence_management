@@ -1,8 +1,13 @@
-type car = {
+import { Meta } from "./incident";
+
+export type Car = {
   id: number;
   make: string;
   model: string;
   licensePlate: string;
 };
 
-export type CarResponse = car[];
+export type CarResponse = {
+  meta: Meta;
+  data: Car[];
+};

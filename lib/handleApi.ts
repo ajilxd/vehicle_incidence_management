@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export function handleApi(fn: Function) {
-  return async (req: NextRequest) => {
+  return async (req: NextRequest, ctx: any) => {
     try {
-      return await fn(req);
+      return await fn(req, ctx);
     } catch (error: any) {
       console.error("Error handling API request:", error);
       return NextResponse.json(

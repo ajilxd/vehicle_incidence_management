@@ -41,6 +41,12 @@ export const IncidentFiltersSchema = z.object({
   endDate: z.coerce.date().optional(),
 });
 
+export const CarFilterSchema = z.object({
+  query: z.string().optional(),
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(100).default(10),
+});
+
 export type IncidentFilters = z.infer<typeof IncidentFiltersSchema>;
 
 export const IncidentCommentSchema = z.object({

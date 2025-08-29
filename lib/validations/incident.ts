@@ -10,7 +10,7 @@ export const IncidentCreateSchema = z.object({
 
   severity: z.nativeEnum(IncidentSeverity).default(IncidentSeverity.LOW),
   status: z.nativeEnum(IncidentStatus).default(IncidentStatus.PENDING),
-  type: z.nativeEnum(IncidentType),
+  type: z.nativeEnum(IncidentType).default(IncidentType.MAINTENANCE_ISSUE),
 
   location: z.string().optional(),
   latitude: z.coerce.number().optional(),
@@ -24,21 +24,25 @@ export const IncidentCreateSchema = z.object({
 
 export type IncidentCreateInput = z.infer<typeof IncidentCreateSchema>;
 
-export const IncidentStep1Schema = IncidentCreateSchema.pick({
-  title: true,
-  type: true,
-  severity: true,
-  description: true,
-  occurredAt: true,
-  estimatedCost: true,
-  location: true,
+export const IncidentStep1Schema = z.object({
+  title: z.string().min(1, "Title is required"),
+  description: z.string().min(1, "Description is required"),
+  occurredAt: z.coerce.date(),
+  type: z.nativeEnum(IncidentType),
+  severity: z.nativeEnum(IncidentSeverity),
+  estimatedCost: z.coerce.number().optional(), // also coerce if coming from <input type="number" />
 });
 
-export const IncidentStep2Schema = IncidentCreateSchema.pick({
-  carId: true,
-  images: true,
+export const IncidentStep2Schema = z.object({
+  carId: z.coerce.number().int().positive(),
+  images: z
+    .any()
+    .refine(
+      (files) => files instanceof FileList && files.length > 0,
+      "At least one image is required"
+    )
+    .optional(),
 });
 
-export const IncidentStep3Schema = IncidentCreateSchema.pick({
-  assignedToId: true,
-});
+export type IncidentStep1Values = z.infer<typeof IncidentStep1Schema>;
+export type IncidentStep2Values = z.infer<typeof IncidentStep2Schema>;

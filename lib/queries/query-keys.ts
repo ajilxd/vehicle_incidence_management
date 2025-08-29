@@ -1,4 +1,4 @@
-import { IncidentFilters } from "@/types";
+import { IncidentFilters, CarFilters } from "@/types";
 
 export const queryKeys = {
   incidents: {
@@ -15,6 +15,6 @@ export const queryKeys = {
     list: () => ["users"],
   },
   cars: {
-    list: () => ["cars"],
+    list: (filters: CarFilters) => ["cars", "list", JSON.stringify(filters)],
   },
 };

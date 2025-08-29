@@ -4,8 +4,10 @@ import { Incident } from "@/schemas/response/incident";
 
 export default function IncidentsTable({
   incidents,
+  page,
 }: {
   incidents: Incident[] | undefined;
+  page: number;
 }) {
   const renderBadge = (value: string, type: "severity" | "status") => {
     const styles: Record<string, string> = {
@@ -55,7 +57,7 @@ export default function IncidentsTable({
                 <div className="flex-1">
                   <div className="font-semibold text-lg flex items-center justify-between md:justify-start gap-2">
                     <span>
-                      #{index + 1} {title}
+                      #{(page - 1) * 10 + index + 1} {title}
                     </span>
                     <div className="flex gap-2 md:hidden">
                       {renderBadge(status, "status")}

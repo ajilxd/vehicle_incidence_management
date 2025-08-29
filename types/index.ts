@@ -44,6 +44,12 @@ export interface IncidentFilters {
   limit?: number;
 }
 
+export interface CarFilters {
+  query?: string;
+  page?: number;
+  limit?: number;
+}
+
 export type CreateAuditLog = {
   action: AuditActionType;
   entityId: number;

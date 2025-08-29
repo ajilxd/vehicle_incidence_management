@@ -107,7 +107,8 @@ const createIncidents = async (request: NextRequest) => {
 
   // Handle image uploads to Cloudinary
   const uploadedImages: string[] = [];
-  const files = formData.getAll("imageFiles");
+  const files = formData.getAll("images");
+
   for (const file of files) {
     if (file instanceof File) {
       const arrayBuffer = await file.arrayBuffer();

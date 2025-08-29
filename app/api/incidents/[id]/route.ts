@@ -11,9 +11,9 @@ import { NextRequest, NextResponse } from "next/server";
 
 const getIncidentDetails = async (
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) => {
-  const id = Number(params.id);
+  const id = Number(context.params?.id);
   if (!id || isNaN(id)) {
     return NextResponse.json(
       { error: "Invalid or missing id" },

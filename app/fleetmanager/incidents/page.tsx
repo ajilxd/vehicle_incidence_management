@@ -56,13 +56,13 @@ export default function Page() {
 
   return (
     <div className="p-4 sm:p-6 space-y-6">
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {/* Status */}
         <div className="flex flex-col">
-          <Label>Status</Label>
+          <Label className="mb-1">Status</Label>
           <Select onValueChange={(val) => setStatus(val || "")}>
-            <SelectTrigger>
-              <SelectValue placeholder="All" defaultValue={status} />
+            <SelectTrigger className="w-11/12 md:w-min ">
+              <SelectValue placeholder="All" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value={"all"}>All</SelectItem>
@@ -81,9 +81,9 @@ export default function Page() {
 
         {/* Severity */}
         <div className="flex flex-col">
-          <Label>Severity</Label>
+          <Label className="mb-1">Severity</Label>
           <Select onValueChange={(val) => setSeverity(val || "")}>
-            <SelectTrigger>
+            <SelectTrigger className="w-11/12 md:w-min ">
               <SelectValue placeholder="All" />
             </SelectTrigger>
             <SelectContent>
@@ -100,9 +100,9 @@ export default function Page() {
 
         {/* Type */}
         <div className="flex flex-col">
-          <Label>Type</Label>
+          <Label className="mb-1">Type</Label>
           <Select onValueChange={(val) => setType(val || "")}>
-            <SelectTrigger>
+            <SelectTrigger className="w-11/12 md:w-min">
               <SelectValue placeholder="All" />
             </SelectTrigger>
             <SelectContent>
@@ -123,9 +123,9 @@ export default function Page() {
 
         {/* Assigned To */}
         <div className="flex flex-col">
-          <Label>Assigned To</Label>
+          <Label className="mb-1">Assigned To</Label>
           <Select onValueChange={(val) => setAssigned(val || "")}>
-            <SelectTrigger>
+            <SelectTrigger className="w-11/12 md:w-min ">
               <SelectValue placeholder="All" />
             </SelectTrigger>
             <SelectContent>
@@ -140,30 +140,33 @@ export default function Page() {
         </div>
 
         {/* Date From */}
-        <div className="flex flex-col">
-          <Label>Date From</Label>
+        <div className="flex flex-col ">
+          <Label className="mb-1">Date From</Label>
           <Input
             type="date"
+            className="w-11/12 md:w-min "
             value={dateFrom}
             onChange={(e) => setDateFrom(e.target.value)}
           />
         </div>
 
         {/* Date To */}
-        <div className="flex flex-col">
-          <Label>Date To</Label>
+        <div className="flex flex-col ">
+          <Label className="mb-1">Date To</Label>
           <Input
             type="date"
+            className="w-11/12 md:w-min "
             value={dateTo}
             onChange={(e) => setDateTo(e.target.value)}
           />
         </div>
 
-        {/* Search - span full width */}
+        {/* Search (full width row) */}
         <div className="flex flex-col sm:col-span-2 md:col-span-3 lg:col-span-6">
-          <Label>Search</Label>
+          <Label className="mb-1">Search</Label>
           <Input
             placeholder="Search by title..."
+            className="w-11/12 md:w-full "
             value={search}
             onChange={(e) => debouncedSetSearch(e.target.value)}
           />
@@ -171,7 +174,7 @@ export default function Page() {
       </div>
 
       {/* Incidents Table */}
-      <IncidentsTable incidents={incidents} />
+      <IncidentsTable incidents={incidents} page={page} />
 
       {/* Pagination */}
       <Pagination
