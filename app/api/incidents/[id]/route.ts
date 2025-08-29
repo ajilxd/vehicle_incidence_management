@@ -5,16 +5,17 @@ import { IncidentDetailsResponse } from "@/schemas/response/incident";
 import {
   AuditActionType,
   AuditEntityType,
+  IncidentStatus,
   IncidentUpdateType,
 } from "@prisma/client";
+
 import { NextRequest, NextResponse } from "next/server";
-import { is } from "zod/v4/locales";
 
 const getIncidentDetails = async (
   request: NextRequest,
-  context: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) => {
-  const id = context.params?.id;
+  const { id } = await params;
   const incidentId = Number(id);
   if (!incidentId || isNaN(incidentId)) {
     return NextResponse.json(
@@ -80,9 +81,7 @@ const updateIncident = async (
   { params }: { params: Promise<{ id: string }> }
 ) => {
   const { id } = await params;
-  console.log("Raw id:", id, "Type:", typeof id);
-  console.log("id from params", Number(id), 3);
-  console.log(isNaN(+id));
+
   const incidentId = Number(id);
   const body = await request.json();
   if (!incidentId || isNaN(incidentId)) {
@@ -113,19 +112,30 @@ const updateIncident = async (
   let action: AuditActionType = AuditActionType.UPDATE;
   let entityType: AuditEntityType = AuditEntityType.INCIDENT;
   if ("status" in result) {
-    payload = await prisma.incident.update({
-      where: { id: incidentId },
-      data: { status: result.status },
-    });
+    if (result.status === IncidentStatus.RESOLVED) {
+      payload = await prisma.incident.update({
+        where: { id: incidentId },
+        data: { status: result.status, resolvedAt: new Date() },
+      });
+    } else {
+      payload = await prisma.incident.update({
+        where: { id: incidentId },
+        data: { status: result.status },
+      });
+    }
     updateType = IncidentUpdateType.STATUS_CHANGE;
     message = `Updated status to ${result.status}`;
   } else if ("assignedToId" in result) {
+    const user = await prisma.user.findUnique({
+      where: { id: result.assignedToId },
+      select: { name: true },
+    });
     payload = await prisma.incident.update({
       where: { id: incidentId },
       data: { assignedToId: result.assignedToId },
     });
     updateType = IncidentUpdateType.ASSIGNMENT;
-    message = `Assigned incident to ${result.assignedToId}`;
+    message = `Assigned incident to ${user?.name}`;
   } else if ("resolutionNotes" in result) {
     payload = await prisma.incident.update({
       where: { id: incidentId },

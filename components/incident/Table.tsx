@@ -10,11 +10,10 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { Pencil, X } from "lucide-react";
-import { useMutation } from "@tanstack/react-query";
-import { apiClient } from "@/lib/api-client";
 import { useUpdateIncident } from "@/lib/queries/mutations/incident";
 import { useUsers } from "@/lib/queries/hooks";
 import { IncidentStatus } from "@prisma/client";
+import Link from "next/link";
 
 export default function IncidentsTable({
   incidents,
@@ -114,6 +113,14 @@ export default function IncidentsTable({
 
                 {/* Right Column: People + Dates */}
                 <div className="flex-1 flex flex-col gap-2 md:gap-3 text-sm text-gray-700">
+                  <div className="flex justify-end">
+                    <Link
+                      href={`incidents/${id}`}
+                      className="text-blue-500 hover:underline"
+                    >
+                      View
+                    </Link>
+                  </div>
                   <div>
                     <span className="font-semibold">Reported By:</span>{" "}
                     {reportedBy?.name ?? "N/A"}

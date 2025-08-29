@@ -76,3 +76,47 @@ export type IncidentDetailsResponse =
       }[];
     })
   | null;
+
+export type IncidentStatsResponse = {
+  closedIncidents: number;
+  totalIncidents: number;
+  openIncidents: number;
+  groupByStatus: {
+    status: string;
+    _count: {
+      id: number;
+    };
+  }[];
+  groupBySeverity: {
+    severity: string;
+    _count: {
+      id: number;
+    };
+  }[];
+  groupByType: {
+    type: string;
+    _count: {
+      id: number;
+    };
+  }[];
+  totalEstimatedCost: {
+    _sum: {
+      estimatedCost: number;
+    };
+  };
+  totalActualCost: {
+    _sum: {
+      actualCost: number;
+    };
+  };
+  costBySeverity: {
+    severity: string;
+    _sum: {
+      estimatedCost: number;
+    };
+  }[];
+  incidentsByMonth: {
+    month: number;
+    incident_count: number;
+  }[];
+};

@@ -1,16 +1,27 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import GoBackButton from "@/components/goback-button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useIncidentDetail } from "@/lib/queries/hooks";
+import Image from "next/image";
+import { useParams } from "next/navigation";
 
-export default function IncidentPage({ params }: { params: { id: string } }) {
-  const incidentId = params.id;
+export default function IncidentPage() {
+  const params = useParams();
+  const incidentId = params.id as string;
   const { data: incident } = useIncidentDetail(incidentId);
-  console.log(incident);
+  console.log("incident", incident);
   return (
     <div className="container mx-auto p-4 space-y-6">
       {/* Title */}
+      <GoBackButton />
       <div className="text-center">
         <h1 className="text-2xl md:text-3xl font-bold">Incident Details</h1>
         <p className="text-sm text-muted-foreground">
@@ -142,6 +153,66 @@ export default function IncidentPage({ params }: { params: { id: string } }) {
               {incident?.carReading?.odometerReading}
             </p>
           </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Incident Images</CardTitle>
+        </CardHeader>
+        <CardContent className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          {incident?.images && incident.images.length > 0 ? (
+            incident?.images.map((url, idx) => (
+              <div
+                key={idx}
+                className="relative w-full h-48 rounded overflow-hidden border border-gray-200"
+              >
+                <Image
+                  src={url}
+                  fill
+                  className="object-cover"
+                  alt={"Incident Image"}
+                />
+              </div>
+            ))
+          ) : (
+            <p className="text-muted-foreground col-span-full text-center">
+              No images
+            </p>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Incident Logs</CardTitle>
+          <CardDescription>
+            Recent updates and actions for this incident
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {incident?.updates && incident?.updates?.length > 0 ? (
+            incident.updates.map((log) => (
+              <div
+                key={log.id}
+                className="border border-gray-200 rounded p-3 hover:bg-gray-50 transition"
+              >
+                <p className="text-sm font-medium text-gray-700">
+                  {log.message}
+                </p>
+                <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                  <span>{log.updateType}</span>
+                  <span>
+                    {log.user.name} — {new Date(log.createdAt).toDateString()}
+                  </span>
+                </div>
+              </div>
+            ))
+          ) : (
+            <p className="text-muted-foreground text-center">
+              No logs available
+            </p>
+          )}
         </CardContent>
       </Card>
     </div>

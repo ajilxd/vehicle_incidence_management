@@ -3,6 +3,7 @@ import { apiClient } from "../api-client";
 import {
   IncidentsResponse,
   IncidentDetailsResponse,
+  IncidentStatsResponse,
 } from "@/schemas/response/incident";
 
 export const fetchIncidents: (
@@ -24,3 +25,8 @@ export const fetchIncidentDetail: (
 ) => Promise<IncidentDetailsResponse> = async (id: string) => {
   return apiClient.get(`/incidents/${id}`);
 };
+
+export const fetchIncidentStats: () => Promise<IncidentStatsResponse> =
+  async () => {
+    return apiClient.get(`/incidents/stats`);
+  };
