@@ -29,6 +29,8 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { useIncidentStats } from "@/lib/queries/hooks";
+import { Stats } from "fs";
+import StatsPageSkeleton from "./StatsPageSkeleton";
 
 const chartConfig = {
   incidents: {
@@ -43,7 +45,7 @@ const chartConfig = {
 
 const IncidentDashboard: React.FC = () => {
   // Transform data for charts
-  const { data } = useIncidentStats();
+  const { data, isLoading } = useIncidentStats();
 
   const statusData = data?.groupByStatus.map((item) => ({
     status: item.status,
@@ -67,9 +69,12 @@ const IncidentDashboard: React.FC = () => {
     cost: item._sum.estimatedCost,
   }));
 
+  if (isLoading) {
+    return <StatsPageSkeleton />;
+  }
+
   return (
     <div className="container mx-auto p-4 space-y-6">
-      {/* Key Metrics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
           <CardHeader>
@@ -99,7 +104,6 @@ const IncidentDashboard: React.FC = () => {
 
       {/* Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Bar Chart: Incidents by Status */}
         <Card>
           <CardHeader>
             <CardTitle>Incidents by Status</CardTitle>

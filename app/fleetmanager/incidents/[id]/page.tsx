@@ -16,12 +16,14 @@ import { useAddIncidentComment } from "@/lib/queries/mutations/incident";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
+import { is } from "zod/v4/locales";
+import IncidentPageSkeleton from "./IncidentPageSkeleton";
 
 export default function IncidentPage() {
   const params = useParams();
   const incidentId = params.id as string;
   const incidentComment = useAddIncidentComment();
-  const { data: incident } = useIncidentDetail(incidentId);
+  const { data: incident, isLoading } = useIncidentDetail(incidentId);
   const incidentUpdates = incident?.updates || [];
   const statusUpdates = incidentUpdates
     .filter((update) => update.updateType === "STATUS_CHANGE")
@@ -43,6 +45,13 @@ export default function IncidentPage() {
       }
     );
   }
+
+  // skeleton loading
+
+  if (isLoading) {
+    return <IncidentPageSkeleton />;
+  }
+
   return (
     <div className="container mx-auto p-4 space-y-6">
       {/* Title */}

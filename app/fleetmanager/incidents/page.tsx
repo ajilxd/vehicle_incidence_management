@@ -16,6 +16,7 @@ import { Label } from "@/components/ui/label";
 import { IncidentSeverity, IncidentStatus, IncidentType } from "@prisma/client";
 import { debounce } from "@/lib/debounce";
 import { set } from "zod";
+import IncidentsTableSkeleton from "./IncidnentTablePagination";
 
 export default function Page() {
   // filters
@@ -39,7 +40,7 @@ export default function Page() {
     []
   );
 
-  const { data: response } = useIncidents({
+  const { data: response, isLoading: incidentsLoading } = useIncidents({
     page: page,
     limit: 10,
     query: search === "all" ? "" : search,
@@ -179,7 +180,11 @@ export default function Page() {
       </div>
 
       {/* Incidents Table */}
-      <IncidentsTable incidents={incidents} page={page} />
+      {incidentsLoading ? (
+        <IncidentsTableSkeleton count={5} />
+      ) : (
+        <IncidentsTable incidents={incidents} page={page} />
+      )}
 
       {/* Pagination */}
       <Pagination
