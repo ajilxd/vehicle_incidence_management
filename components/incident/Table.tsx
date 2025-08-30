@@ -142,7 +142,7 @@ export default function IncidentsTable({
                               id,
                               data: {
                                 assignedToId: Number(val),
-                                userId: 1,
+                                userId: 4,
                               },
                             });
                             setEditingAssignedId(null);
@@ -190,7 +190,7 @@ export default function IncidentsTable({
                           onValueChange={(val) => {
                             updateIncident.mutate({
                               id,
-                              data: { status: val, userId: 1 },
+                              data: { status: val, userId: 4 },
                             });
                             setEditingStatusId(null);
                           }}

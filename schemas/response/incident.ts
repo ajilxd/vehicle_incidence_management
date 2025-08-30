@@ -68,6 +68,7 @@ export type IncidentDetailsResponse =
         id: number;
         message: string;
         updateType: IncidentUpdateType;
+        updatedStatus: IncidentStatus;
         createdAt: Date;
         user: {
           id: number;

@@ -33,6 +33,7 @@ const getIncidentDetails = async (
           message: true,
           updateType: true,
           createdAt: true,
+          updatedStatus: true,
           user: {
             select: {
               id: true,
@@ -97,6 +98,15 @@ const updateIncident = async (
       { status: 400 }
     );
   }
+  const user = await prisma.user.findUnique({
+    where: { id: body.userId },
+  });
+
+  console.log("user at patch", user);
+  if (!user || user.role !== "MANAGER") {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+  }
+
   const parsedData = IncidentUpdateSchema.safeParse(body);
   if (!parsedData.success) {
     return NextResponse.json(

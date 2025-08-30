@@ -2,6 +2,7 @@
 
 import GoBackButton from "@/components/goback-button";
 import { CommentBox } from "@/components/incident/CommentBox";
+import { StatusTimeline } from "@/components/incident/StatusTimeline";
 import {
   Card,
   CardContent,
@@ -21,7 +22,16 @@ export default function IncidentPage() {
   const incidentId = params.id as string;
   const incidentComment = useAddIncidentComment();
   const { data: incident } = useIncidentDetail(incidentId);
-  console.log("incident", incident);
+  const incidentUpdates = incident?.updates || [];
+  const statusUpdates = incidentUpdates
+    .filter((update) => update.updateType === "STATUS_CHANGE")
+    .map((i) => {
+      return {
+        status: i.updatedStatus,
+        date: i.createdAt,
+      };
+    });
+
   async function handleComment(comment: string) {
     if (!comment.trim()) return;
     await toast.promise(
@@ -39,10 +49,10 @@ export default function IncidentPage() {
       <GoBackButton />
 
       <div className="text-center">
-        <h1 className="text-2xl md:text-3xl font-bold">Incident Details</h1>
-        <p className="text-sm text-muted-foreground">
+        <h1 className="text-2xl md:text-3xl font-semibold">
           #{incident?.id} – {incident?.title}
-        </p>
+        </h1>
+        <p className="text-sm text-muted-foreground">Incident Details</p>
       </div>
 
       {/* Overview Section */}
@@ -198,7 +208,8 @@ export default function IncidentPage() {
           )}
         </CardContent>
       </Card>
-
+      {/* status timeline */}
+      <StatusTimeline data={statusUpdates} />
       <Card>
         <CardHeader>
           <CardTitle>Incident Logs</CardTitle>

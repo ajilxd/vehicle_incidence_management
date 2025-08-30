@@ -57,7 +57,7 @@ model IncidentUpdate {
   createdAt  DateTime           @default(now())
   incident   Incident           @relation(fields: [incidentId], references: [id], onDelete: Cascade)
   user       User               @relation(fields: [userId], references: [id], onDelete: Cascade)
-
+  updatedStatus IncidentStatus  @default(IN_PROGRESS)
   @@index([incidentId])
   @@index([userId])
   @@map("incident_updates")
