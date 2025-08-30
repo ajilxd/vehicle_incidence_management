@@ -15,11 +15,13 @@ import {
 import { Label } from "@/components/ui/label";
 import { IncidentSeverity, IncidentStatus, IncidentType } from "@prisma/client";
 import { debounce } from "@/lib/debounce";
+import { set } from "zod";
 
 export default function Page() {
   // filters
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
+  const [currentSearch, setCurrentSearch] = useState("");
   const [status, setStatus] = useState<IncidentStatus | string>("");
   const [severity, setSeverity] = useState<IncidentSeverity | string>("");
   const [type, setType] = useState<IncidentType | string>("");
@@ -167,8 +169,11 @@ export default function Page() {
           <Input
             placeholder="Search by title..."
             className="w-11/12 md:w-full "
-            value={search}
-            onChange={(e) => debouncedSetSearch(e.target.value)}
+            value={currentSearch}
+            onChange={(e) => {
+              setCurrentSearch(e.target.value);
+              debouncedSetSearch(e.target.value);
+            }}
           />
         </div>
       </div>
