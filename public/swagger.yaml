@@ -5,8 +5,8 @@ info:
   version: 1.0.0
 
 servers:
-  - url: http://localhost:3000/api
-    description: Local server
+  url: process.env.NEXT_PUBLIC_API_BASE_URL
+  description: Local server
 
 paths:
   /incidents:
