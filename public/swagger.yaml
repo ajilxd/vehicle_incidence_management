@@ -561,7 +561,7 @@ components:
         - GUEST
       example: USER
 
-    UserType:
+    UsersResponse:
       type: array
       items:
         type: object
