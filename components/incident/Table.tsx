@@ -14,6 +14,7 @@ import { useUpdateIncident } from "@/lib/queries/mutations/incident";
 import { useUsers } from "@/lib/queries/hooks";
 import { IncidentStatus } from "@prisma/client";
 import Link from "next/link";
+import { disableStatusItem } from "@/lib/statusFLow";
 
 export default function IncidentsTable({
   incidents,
@@ -200,19 +201,49 @@ export default function IncidentsTable({
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value={"all"}>All</SelectItem>
-                            <SelectItem value={IncidentStatus.PENDING}>
+                            <SelectItem
+                              value={IncidentStatus.PENDING}
+                              disabled={disableStatusItem(
+                                status,
+                                IncidentStatus.PENDING
+                              )}
+                            >
                               Pending
                             </SelectItem>
-                            <SelectItem value={IncidentStatus.RESOLVED}>
+                            <SelectItem
+                              value={IncidentStatus.RESOLVED}
+                              disabled={disableStatusItem(
+                                status,
+                                IncidentStatus.RESOLVED
+                              )}
+                            >
                               Resolved
                             </SelectItem>
-                            <SelectItem value={IncidentStatus.CLOSED}>
+                            <SelectItem
+                              value={IncidentStatus.CLOSED}
+                              disabled={disableStatusItem(
+                                status,
+                                IncidentStatus.CLOSED
+                              )}
+                            >
                               Closed
                             </SelectItem>
-                            <SelectItem value={IncidentStatus.CANCELLED}>
+                            <SelectItem
+                              value={IncidentStatus.CANCELLED}
+                              disabled={disableStatusItem(
+                                status,
+                                IncidentStatus.CANCELLED
+                              )}
+                            >
                               Cancelled
                             </SelectItem>
-                            <SelectItem value={IncidentStatus.IN_PROGRESS}>
+                            <SelectItem
+                              value={IncidentStatus.IN_PROGRESS}
+                              disabled={disableStatusItem(
+                                status,
+                                IncidentStatus.IN_PROGRESS
+                              )}
+                            >
                               In Progress
                             </SelectItem>
                           </SelectContent>
