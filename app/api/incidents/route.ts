@@ -61,6 +61,7 @@ const getIncidents = async function (request: NextRequest) {
       location: true,
       occurredAt: true,
       reportedAt: true,
+      estimatedCost: true,
       car: {
         select: { id: true, make: true, model: true, licensePlate: true },
       },
