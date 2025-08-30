@@ -141,6 +141,7 @@ const createIncidents = async (request: NextRequest) => {
     data: {
       ...parsedData,
       images: uploadedImages.length > 0 ? uploadedImages : undefined,
+      reportedAt: new Date(),
     },
     include: {
       car: {
