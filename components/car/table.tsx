@@ -27,12 +27,12 @@ export default function CarTable({
   const handlePageChange = useCallback((p: number) => setPage(p), []);
   console.log("search", search);
   const { data: response } = useCars({
-    page: page,
-    limit: 4,
+    page: "" + page,
+    limit: "" + 4,
     query: search === "all" ? "" : search,
   });
   const cars = response?.data || [];
-  const meta = response?.meta || {};
+  const meta = response?.meta || { totalPages: 1 };
   return (
     <div className="max-h-1/3">
       <Input
@@ -81,7 +81,7 @@ export default function CarTable({
       </Table>
       <Pagination
         currentPage={page}
-        totalPages={meta?.totalPages || 1}
+        totalPages={meta.totalPages}
         onPageChange={handlePageChange}
       />
     </div>

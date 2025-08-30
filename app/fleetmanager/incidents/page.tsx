@@ -41,8 +41,8 @@ export default function Page() {
   );
 
   const { data: response, isLoading: incidentsLoading } = useIncidents({
-    page: page,
-    limit: 10,
+    page: "" + page,
+    limit: "" + 10,
     query: search === "all" ? "" : search,
     status: status === "all" ? "" : status,
     severity: severity === "all" ? "" : severity,
@@ -133,7 +133,7 @@ export default function Page() {
             </SelectTrigger>
             <SelectContent>
               {assignees.map((i) => (
-                <SelectItem key={i.id} value={i.id}>
+                <SelectItem key={i.id} value={"" + i.id}>
                   {i.name}
                 </SelectItem>
               ))}

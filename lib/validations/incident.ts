@@ -2,7 +2,7 @@ import { z } from "zod";
 import { IncidentSeverity, IncidentStatus, IncidentType } from "@prisma/client";
 import { IncidentCreateSchema } from "@/schemas";
 
-export type IncidentCreateInput = z.infer<typeof IncidentCreateSchema>;
+export type IncidentCreateInput = z.input<typeof IncidentCreateSchema>;
 
 export const IncidentStep1Schema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -37,5 +37,5 @@ export const IncidentStep2Schema = z.object({
     .optional(),
 });
 
-export type IncidentStep1Values = z.infer<typeof IncidentStep1Schema>;
-export type IncidentStep2Values = z.infer<typeof IncidentStep2Schema>;
+export type IncidentStep1Values = z.input<typeof IncidentStep1Schema>;
+export type IncidentStep2Values = z.input<typeof IncidentStep2Schema>;

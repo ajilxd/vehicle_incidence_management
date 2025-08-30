@@ -139,7 +139,7 @@ export default function IncidentsTable({
                         <Select
                           onValueChange={(val) => {
                             updateIncident.mutateAsync({
-                              id,
+                              id: "" + id,
                               data: {
                                 assignedToId: Number(val),
                                 userId: 4,
@@ -189,7 +189,7 @@ export default function IncidentsTable({
                         <Select
                           onValueChange={(val) => {
                             updateIncident.mutate({
-                              id,
+                              id: "" + id,
                               data: { status: val, userId: 4 },
                             });
                             setEditingStatusId(null);

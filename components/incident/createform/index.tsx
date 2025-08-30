@@ -30,7 +30,7 @@ export default function MultiStepIncidentForm() {
         formData.append(key, value as any);
       }
     });
-    formData.append("reportedById", 1);
+    formData.append("reportedById", String(1));
 
     await toast.promise(createIncident.mutateAsync(formData), {
       loading: "Creating incident...",

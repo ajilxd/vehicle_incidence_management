@@ -1,22 +1,21 @@
 import { AuditActionType, AuditEntityType } from "@prisma/client";
 
-
 export interface IncidentFilters {
   status?: string;
   severity?: string;
-  carId?: number;
-  assignedToId?: number;
+  carId?: string;
+  assignedToId?: string;
   startDate?: string;
   endDate?: string;
   query?: string;
-  page?: number;
-  limit?: number;
+  page?: string;
+  limit?: string;
 }
 
 export interface CarFilters {
   query?: string;
-  page?: number;
-  limit?: number;
+  page?: string;
+  limit?: string;
 }
 
 export type CreateAuditLog = {

@@ -18,11 +18,10 @@ export function IncidentStep1({
     handleSubmit,
     formState: { errors },
   } = useForm<IncidentStep1Values>({
-    resolver: zodResolver(IncidentStep1Schema),
+    resolver: zodResolver(IncidentStep1Schema) as any,
     defaultValues: {
       severity: IncidentSeverity.LOW,
       type: IncidentType.MAINTENANCE_ISSUE,
-      occurredAt: new Date(),
     },
   });
 

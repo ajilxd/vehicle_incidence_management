@@ -5,7 +5,7 @@ export const useCreateIncident = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (data) =>
+    mutationFn: async (data: FormData) =>
       apiClient.post("/incidents", data, {
         headers: {
           "Content-Type": "multipart/form-data",
