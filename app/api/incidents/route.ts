@@ -96,7 +96,10 @@ const createIncidents = async (request: NextRequest) => {
     }
   });
 
+  console.log(plainData);
+
   const result = IncidentCreateSchema.safeParse(plainData);
+
   if (!result.success) {
     return NextResponse.json(
       { errors: result.error.flatten() },
@@ -104,6 +107,8 @@ const createIncidents = async (request: NextRequest) => {
     );
   }
   const parsedData = result.data;
+
+  console.log(parsedData);
 
   // Handle image uploads to Cloudinary
   const uploadedImages: string[] = [];

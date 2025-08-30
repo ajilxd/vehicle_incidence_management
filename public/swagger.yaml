@@ -1,0 +1,580 @@
+openapi: 3.0.3
+info:
+  title: Vehicle Incident Management API
+  description: API documentation for managing vehicle incidents
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:3000/api
+    description: Local server
+
+paths:
+  /incidents:
+    get:
+      summary: Get all incidents
+      responses:
+        "200":
+          description: A list of incidents with pagination metadata
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IncidentsResponse"
+    post:
+      summary: Create a new incident
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/IncidentCreateInput"
+      responses:
+        "201":
+          description: The created incident
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Incident"
+        "400":
+          description: Invalid input data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Validation failed: invalid status"
+
+  /incidents/{id}:
+    get:
+      summary: Get an incident by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: The incident with the specified ID
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IncidentDetailResponse"
+        "404":
+          description: Incident not found
+    patch:
+      summary: Update an incident by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IncidentPatch"
+      responses:
+        "200":
+          description: The updated incident
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "400":
+          description: Invalid input data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Validation failed: invalid status"
+        "404":
+          description: Incident not found
+
+  /incidents/{id}/updates:
+    post:
+      summary: Add a comment/update to an incident
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - userId
+                - comment
+              properties:
+                userId:
+                  type: integer
+                  example: 3
+                comment:
+                  type: string
+                  example: "Changed status to IN_PROGRESS"
+      responses:
+        "201":
+          description: The added incident update
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IncidentUpdate"
+        "400":
+          description: Invalid input data
+        "404":
+          description: Incident not found
+
+  /incidents/stats:
+    get:
+      summary: Get incident statistics
+      responses:
+        "200":
+          description: Incident statistics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IncidentStatsResponse"
+  /cars:
+    get:
+      summary: Get all cars
+      responses:
+        "200":
+          description: A list of cars with pagination metadata
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CarsResponse"
+  /users:
+    get:
+      summary: Get all users
+      responses:
+        "200":
+          description: A list of users
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UsersResponse"
+
+components:
+  schemas:
+    Car:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        make:
+          type: string
+          example: "Toyota"
+        model:
+          type: string
+          example: "Corolla"
+        licensePlate:
+          type: string
+          example: "AB123CD"
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 7
+        name:
+          type: string
+          example: "John Doe"
+
+    CarReading:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 44
+        odometerReading:
+          type: number
+          example: 45230
+        reportedAt:
+          type: string
+          format: date-time
+          example: "2025-08-29T09:30:00Z"
+
+    IncidentPatch:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [PENDING, IN_PROGRESS, RESOLVED, CLOSED]
+          default: PENDING
+        userId:
+          type: integer
+          example: 3
+
+    IncidentUpdate:
+      type: object
+      properties:
+        userId:
+          type: integer
+          example: 3
+        comment:
+          type: string
+          example: "Changed status to IN_PROGRESS"
+
+    Incident:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 15
+        title:
+          type: string
+          example: "Brake failure"
+        description:
+          type: string
+          example: "Brake not working properly"
+        severity:
+          type: string
+          enum: [LOW, MEDIUM, HIGH, CRITICAL]
+          default: LOW
+        status:
+          type: string
+          enum: [PENDING, IN_PROGRESS, RESOLVED, CLOSED]
+          default: PENDING
+        type:
+          type: string
+          enum:
+            - ACCIDENT
+            - BREAKDOWN
+            - MAINTENANCE_ISSUE
+            - TRAFFIC_VIOLATION
+            - FUEL_ISSUE
+            - THEFT
+            - VANDALISM
+            - OTHER
+        location:
+          type: string
+          nullable: true
+          example: "Highway 21"
+        occurredAt:
+          type: string
+          format: date-time
+          example: "2025-08-29T10:00:00Z"
+        reportedAt:
+          type: string
+          format: date-time
+          example: "2025-08-29T12:00:00Z"
+        estimatedCost:
+          type: number
+          nullable: true
+          example: 5000
+        car:
+          $ref: "#/components/schemas/Car"
+        reportedBy:
+          $ref: "#/components/schemas/User"
+        assignedTo:
+          allOf:
+            - $ref: "#/components/schemas/User"
+          nullable: true
+        carReading:
+          allOf:
+            - $ref: "#/components/schemas/CarReading"
+          nullable: true
+
+    Meta:
+      type: object
+      properties:
+        page:
+          type: integer
+          example: 1
+        limit:
+          type: integer
+          example: 10
+        total:
+          type: integer
+          example: 200
+        totalPages:
+          type: integer
+          example: 20
+
+    IncidentsResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Incident"
+        meta:
+          $ref: "#/components/schemas/Meta"
+
+    IncidentCreateInput:
+      type: object
+      required:
+        - carId
+        - reportedById
+        - title
+        - description
+        - type
+        - occurredAt
+      properties:
+        carId:
+          type: integer
+          example: 1
+        reportedById:
+          type: integer
+          example: 5
+        assignedToId:
+          type: integer
+          nullable: true
+          example: 10
+        title:
+          type: string
+          example: "Brake failure"
+        description:
+          type: string
+          example: "Brake not working properly"
+        severity:
+          type: string
+          enum: [LOW, MEDIUM, HIGH, CRITICAL]
+          default: LOW
+        status:
+          type: string
+          enum: [PENDING, IN_PROGRESS, RESOLVED, CLOSED]
+          default: PENDING
+        type:
+          type: string
+          enum: [ACCIDENT, BREAKDOWN, MAINTENANCE_ISSUE]
+        location:
+          type: string
+          nullable: true
+          example: "Highway 21"
+        latitude:
+          type: number
+          nullable: true
+          example: 12.9716
+        longitude:
+          type: number
+          nullable: true
+          example: 77.5946
+        occurredAt:
+          type: string
+          format: date-time
+          example: "2025-08-29T10:00:00Z"
+        reportedAt:
+          type: string
+          format: date-time
+          example: "2025-08-29T12:00:00Z"
+        estimatedCost:
+          type: number
+          nullable: true
+          example: 5000
+        carReadingId:
+          type: integer
+          nullable: true
+          example: 44
+        images:
+          type: array
+          items:
+            type: string
+
+    IncidentDetailResponse:
+      allOf:
+        - $ref: "#/components/schemas/Incident"
+        - type: object
+          properties:
+            resolvedAt:
+              type: string
+              format: date-time
+              nullable: true
+            images:
+              type: array
+              items:
+                type: string
+            documents:
+              type: array
+              items:
+                type: string
+            latitude:
+              type: number
+              nullable: true
+            longitude:
+              type: number
+              nullable: true
+            actualCost:
+              type: number
+              nullable: true
+            resolutionNotes:
+              type: string
+              nullable: true
+            updates:
+              type: array
+              items:
+                $ref: "#/components/schemas/IncidentUpdate"
+
+    IncidentStatsResponse:
+      type: object
+      properties:
+        closedIncidents:
+          type: integer
+          example: 45
+        totalIncidents:
+          type: integer
+          example: 120
+        openIncidents:
+          type: integer
+          example: 75
+        groupByStatus:
+          type: array
+          items:
+            $ref: "#/components/schemas/GroupByStatus"
+        groupBySeverity:
+          type: array
+          items:
+            $ref: "#/components/schemas/GroupBySeverity"
+        groupByType:
+          type: array
+          items:
+            $ref: "#/components/schemas/GroupByType"
+        totalEstimatedCost:
+          $ref: "#/components/schemas/TotalEstimatedCost"
+        totalActualCost:
+          $ref: "#/components/schemas/TotalActualCost"
+        costBySeverity:
+          type: array
+          items:
+            $ref: "#/components/schemas/CostBySeverity"
+        incidentsByMonth:
+          type: array
+          items:
+            $ref: "#/components/schemas/IncidentsByMonth"
+
+    GroupByStatus:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "OPEN"
+        _count:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 20
+
+    GroupBySeverity:
+      type: object
+      properties:
+        severity:
+          type: string
+          example: "HIGH"
+        _count:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 15
+
+    GroupByType:
+      type: object
+      properties:
+        type:
+          type: string
+          example: "ACCIDENT"
+        _count:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 12
+
+    TotalEstimatedCost:
+      type: object
+      properties:
+        _sum:
+          type: object
+          properties:
+            estimatedCost:
+              type: number
+              nullable: true
+              example: 120000
+
+    TotalActualCost:
+      type: object
+      properties:
+        _sum:
+          type: object
+          properties:
+            actualCost:
+              type: number
+              nullable: true
+              example: 110000
+
+    CostBySeverity:
+      type: object
+      properties:
+        severity:
+          type: string
+          example: "CRITICAL"
+        _sum:
+          type: object
+          properties:
+            estimatedCost:
+              type: number
+              nullable: true
+              example: 75000
+
+    IncidentsByMonth:
+      type: object
+      properties:
+        month:
+          type: integer
+          example: 8
+        incident_count:
+          type: integer
+          example: 12
+
+    CarResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Car"
+        meta:
+          $ref: "#/components/schemas/Meta"
+    UserRole:
+      type: string
+      enum:
+        - ADMIN
+        - USER
+        - MANAGER
+        - GUEST
+      example: USER
+
+    UserType:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: integer
+            example: 1
+          name:
+            type: string
+            example: "Ajil Senpai"
+          email:
+            type: string
+            format: email
+            example: "ajil@example.com"
+          role:
+            $ref: "#/components/schemas/UserRole"

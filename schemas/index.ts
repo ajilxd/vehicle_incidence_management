@@ -5,21 +5,18 @@ import { IncidentStatus, IncidentSeverity } from "@prisma/client";
 export const IncidentCreateSchema = z.object({
   carId: z.coerce.number().int().positive(),
   reportedById: z.coerce.number().int().positive(),
-  assignedToId: z.coerce.number().int().positive().optional(),
   title: z.string().min(1, "Title is required"),
   description: z.string().min(1, "Description is required"),
-
   severity: z.nativeEnum(IncidentSeverity).default(IncidentSeverity.LOW),
   status: z.nativeEnum(IncidentStatus).default(IncidentStatus.PENDING),
   type: z.nativeEnum(IncidentType),
-
   location: z.string().optional(),
   latitude: z.coerce.number().optional(),
   longitude: z.coerce.number().optional(),
   occurredAt: z.coerce.date(),
   reportedAt: z.coerce.date().default(new Date()),
   estimatedCost: z.coerce.number().positive().optional(),
-  carReadingId: z.number().int().positive().optional(),
+  carReadingId: z.coerce.number().int().positive().optional(),
   images: z.array(z.string()).optional(),
 });
 
@@ -27,6 +24,7 @@ export const IncidentUpdateSchema = z.object({
   status: z.nativeEnum(IncidentStatus).optional(),
   assignedToId: z.number().int().positive().optional(),
   resolutionNotes: z.string().optional(),
+  userId: z.coerce.number().int(),
 });
 
 export const IncidentFiltersSchema = z.object({

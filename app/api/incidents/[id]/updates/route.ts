@@ -37,7 +37,12 @@ const createComment = async (
     },
   });
 
-  return NextResponse.json({ message: "Incident updated successfully" });
+  return NextResponse.json(
+    { message: "Incident updated successfully" },
+    {
+      status: 201,
+    }
+  );
 };
 
 export const POST = handleApi(createComment);
