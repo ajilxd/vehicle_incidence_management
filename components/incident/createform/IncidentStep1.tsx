@@ -61,6 +61,9 @@ export function IncidentStep1({
       <div>
         <label>Description</label>
         <textarea {...register("description")} className="border p-2 w-full" />
+        {errors.description && (
+          <p className="text-red-600">{errors.description.message}</p>
+        )}
       </div>
 
       <div>
@@ -70,6 +73,9 @@ export function IncidentStep1({
           {...register("occurredAt")}
           className="border p-2 w-full"
         />
+        {errors.occurredAt && (
+          <p className="text-red-600">{errors.occurredAt.message}</p>
+        )}
       </div>
 
       <div>
@@ -79,6 +85,9 @@ export function IncidentStep1({
           {...register("estimatedCost")}
           className="border p-2 w-full"
         />
+        {errors.estimatedCost && (
+          <p className="text-red-600">{errors.estimatedCost.message}</p>
+        )}
       </div>
 
       <button
