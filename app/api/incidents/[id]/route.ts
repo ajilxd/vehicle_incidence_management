@@ -121,6 +121,7 @@ const updateIncident = async (
   let message: string;
   let action: AuditActionType = AuditActionType.UPDATE;
   let entityType: AuditEntityType = AuditEntityType.INCIDENT;
+  console.log("body from updation", body);
   if ("status" in result) {
     if (result.status === IncidentStatus.RESOLVED) {
       payload = await prisma.incident.update({
@@ -158,7 +159,13 @@ const updateIncident = async (
   }
   // Create incident update
   await prisma.incidentUpdate.create({
-    data: { incidentId, message, updateType, userId: body.userId },
+    data: {
+      incidentId,
+      message,
+      updateType,
+      userId: body.userId,
+      updatedStatus: body.status,
+    },
   });
 
   // Create audit log
